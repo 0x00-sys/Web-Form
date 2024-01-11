@@ -46,8 +46,7 @@ namespace Web_Application
         private bool UserExists(string username)
         {
             // Check if the user already exists in the database
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionStringProvider.ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT COUNT(*) FROM Users WHERE UserName = @UserName";
@@ -63,8 +62,7 @@ namespace Web_Application
         private bool RegisterUser(string username, string fullName, string password)
         {
             // Insert new user into the database
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionStringProvider.ConnectionString))
             {
                 connection.Open();
                 string query = "INSERT INTO Users (UserName, Password, FullName) VALUES (@UserName, @Password, @FullName)";

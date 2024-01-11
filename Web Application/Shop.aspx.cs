@@ -51,8 +51,7 @@ namespace Web_Application
         private bool IsProductNameExists(string productName)
         {
             // Check if the product name already exists in the database
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionStringProvider.ConnectionString))
             {
                 connection.Open();
                 string query = "SELECT COUNT(*) FROM Products WHERE Name = @ProductName";
@@ -68,8 +67,7 @@ namespace Web_Application
         private void SaveProduct(string name, string description)
         {
             // Save the product to the database
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(ConnectionStringProvider.ConnectionString))
             {
                 connection.Open();
                 string query = "INSERT INTO Products (Name, Description) VALUES (@Name, @Description)";
@@ -101,7 +99,7 @@ namespace Web_Application
         private void BindGrid()
         {
             // Bind the GridView with data
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
+            string connectionString = ConnectionStringProvider.ConnectionString;
             string query = "SELECT Id, Name, Description FROM Products";
 
             using (SqlConnection connection = new SqlConnection(connectionString))

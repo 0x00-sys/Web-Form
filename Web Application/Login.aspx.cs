@@ -30,7 +30,7 @@ namespace Web_Application
         private bool ValidateUser(string username, string password)
         {
             // Database connection string
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
+            string connectionString = ConnectionStringProvider.ConnectionString;
 
             // Query to check if the user exists with the provided credentials
             string query = "SELECT COUNT(*) FROM Users WHERE UserName = @UserName AND Password = @Password";

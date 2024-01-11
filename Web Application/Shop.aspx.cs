@@ -10,56 +10,73 @@ namespace Web_Application
         {
             if (!IsPostBack)
             {
-                // Učitaj podatke u GridView prilikom prvog učitavanja stranice
+                // Load data into GridView during the first load of the page
                 BindGrid();
             }
         }
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            string name = txtName.Text;
-            string description = txtDescription.Text;
+            string name = txtName.Text.Trim();
+            string description = txtDescription.Text.Trim();
 
-            // Spremi proizvod u bazu podataka
-            SaveProduct(name, description);
+            if (IsProductNameExists(name))
+            {
+                lblErrorMessage.Text = "Product with the same name already exists.";
+                lblErrorMessage.Visible = true;
+            }
+            else
+            {
+                // Save the product to the database
+                SaveProduct(name, description);
 
-            // Osvježi GridView nakon spremanja
-            BindGrid();
+                // Refresh GridView after saving
+                BindGrid();
 
-            // Očisti polja za unos nakon spremanja
-            ClearInputFields();
+                // Clear input fields after saving
+                ClearInputFields();
+            }
         }
 
         protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            // Briši proizvod iz baze podataka
+            // Delete product from the database
             int productId = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Values["Id"]);
             DeleteProduct(productId);
 
-            // Osvježi GridView nakon brisanja
+            // Refresh GridView after deletion
             BindGrid();
+        }
+
+        private bool IsProductNameExists(string productName)
+        {
+            // Check if the product name already exists in the database
+            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM Products WHERE Name = @ProductName";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ProductName", productName);
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+            }
         }
 
         private void SaveProduct(string name, string description)
         {
-            // Database connection string
+            // Save the product to the database
             string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-
-            // Query to insert a new product into the database
-            string query = "INSERT INTO Products (Name, Description) VALUES (@Name, @Description)";
-
-            // Using statement ensures proper disposal of resources
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-
-                // Use parameterized query to prevent SQL injection
+                string query = "INSERT INTO Products (Name, Description) VALUES (@Name, @Description)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Name", name);
                     command.Parameters.AddWithValue("@Description", description);
-
-                    // ExecuteNonQuery returns the number of rows affected
                     command.ExecuteNonQuery();
                 }
             }
@@ -67,23 +84,15 @@ namespace Web_Application
 
         private void DeleteProduct(int productId)
         {
-            // Database connection string
-            string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-
-            // Query to delete a product from the database
-            string query = "DELETE FROM Products WHERE Id = @Id";
-
-            // Using statement ensures proper disposal of resources
+            // Delete product from the database
+            string connectionString = "YourConnectionStringHere"; // Update with your actual connection string
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-
-                // Use parameterized query to prevent SQL injection
+                string query = "DELETE FROM Products WHERE Id = @Id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", productId);
-
-                    // ExecuteNonQuery returns the number of rows affected
                     command.ExecuteNonQuery();
                 }
             }
@@ -91,24 +100,18 @@ namespace Web_Application
 
         private void BindGrid()
         {
-            // Database connection string
+            // Bind the GridView with data
             string connectionString = "Data Source=DESKTOP-A084HG4\\SQLEXPRESS;Initial Catalog=WebFormsLabos;Integrated Security=True;";
-
-            // Query to select all products from the database
             string query = "SELECT Id, Name, Description FROM Products";
 
-            // Using statement ensures proper disposal of resources
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-
-                // Use SqlDataAdapter to fill a DataTable with the results of the query
                 using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
                 {
                     System.Data.DataTable dataTable = new System.Data.DataTable();
                     adapter.Fill(dataTable);
 
-                    // Bind the DataTable to the GridView
                     GridView1.DataSource = dataTable;
                     GridView1.DataBind();
                 }
@@ -117,8 +120,11 @@ namespace Web_Application
 
         private void ClearInputFields()
         {
+            // Clear input fields
             txtName.Text = string.Empty;
             txtDescription.Text = string.Empty;
+            lblErrorMessage.Text = string.Empty;
+            lblErrorMessage.Visible = false;
         }
     }
 }

@@ -68,9 +68,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="Default.css" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
+    <Content Include="Login.css" />
     <Content Include="Shop.aspx" />
+    <Content Include="Shop.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
